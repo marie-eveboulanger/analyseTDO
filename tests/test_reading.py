@@ -1,9 +1,9 @@
-from analysetdo import reading as tdor
+import analysetdo as tdo
 import numpy as np
 
 
 def test_read_from_file():
-    data = tdor.read_from_file("tests/data_test.out")
+    data = tdo.read_from_file("tests/data_test.out")
     up_down = data.remove_field_less_than(1e-3).split_up_down()
     np.testing.assert_array_equal(up_down.field_up, np.sort(up_down.field_up))
     np.testing.assert_array_equal(up_down.field_down, np.sort(up_down.field_down))
@@ -12,7 +12,7 @@ def test_read_from_file():
 def dummy_sweep_data():
     field = np.array([-2, 0.1, -1, 1, 2, 3, 4, 3, 2, 1, -0.1, 0.2])
     signal = np.array([2, 4, 3, 5, 6, 7, 2, 3, 4, 9, 8, 4])
-    return tdor.SweepData(field, signal)
+    return tdo.SweepData(field, signal)
 
 
 def test_convert_dummy_to_up_down():
