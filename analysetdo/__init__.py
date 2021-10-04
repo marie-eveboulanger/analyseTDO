@@ -62,16 +62,15 @@ class SweepData:
         )
 
     def trim_before_field(self, target):
-        index = self.nearest_field_index(target)+1
+        index = self.nearest_field_index(target) + 1
         return SweepData(self.field[index:], self.signal[index:])
 
     def trim_after_field(self, target):
-        index = self.nearest_field_index(target)+1
+        index = self.nearest_field_index(target) + 1
         return SweepData(self.field[:index], self.signal[:index])
 
     def nearest_field_index(self, target):
-        """ Find the index where the field is the closest to target.
-        """
+        """Find the index where the field is the closest to target."""
         above = np.nonzero(self.field >= target)[0][0]
         below = above - 1
         if np.abs(self.field[above] - target) <= np.abs(self.field[below] - target):
@@ -100,35 +99,8 @@ class UpDownData:
 def poly_background_filter(low_bound, high_bound, degree):
     def filt(data):
         trimmed = data.trim_before_field(low_bound).trim_after_field(high_bound)
-        coefficients=pol.polyfit(trimmed.field, trimmed.signal, degree)
+        coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
         poly = pol.Polynomial(coefficients)
-        return SweepData(data.field, data.signal-poly(data.field))
+        return SweepData(data.field, data.signal - poly(data.field))
+
     return filt
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
