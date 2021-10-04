@@ -3,7 +3,7 @@ import numpy as np
 
 
 def test_read_from_file():
-    data = tdo.read_from_file("tests/data_test.out")
+    data = tdo.read_from_file("data_test.out")
     up_down = data.remove_field_less_than(1e-3).split_up_down()
     np.testing.assert_array_equal(up_down.up.field, np.sort(up_down.up.field))
     np.testing.assert_array_equal(up_down.down.field, np.sort(up_down.down.field))

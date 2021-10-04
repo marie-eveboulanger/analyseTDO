@@ -139,3 +139,6 @@ cython_debug/
 
 #DOC
 html/
+
+# Mac weird stuff
+.DS_Store
