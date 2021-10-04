@@ -54,7 +54,8 @@ class SweepData:
         field_up, field_down = self.field[:separator], self.field[separator:]
         signal_up, signal_down = self.signal[:separator], self.signal[separator:]
         return UpDownData(
-            field_up, signal_up, np.flip(field_down), np.flip(signal_down)
+            SweepData(field_up, signal_up), 
+            SweepData(np.flip(field_down), np.flip(signal_down))
         )
 
 
@@ -64,8 +65,7 @@ class UpDownData:
 
     All data is assumed to be sorted from up and down fields.
     """
-    field_up: np.ndarray
-    signal_up: np.ndarray
-    field_down: np.ndarray
-    signal_down: np.ndarray
+    up: SweepData
+    down: SweepData
+
 
