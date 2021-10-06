@@ -13,7 +13,7 @@ low_bound = 30
 high_bound = 50
 degree_fit = 3
 
-x = np.linspace(low_bound,high_bound, 100)
+x = np.linspace(low_bound, high_bound, 100)
 
 # Compute the backgrounds from a polynomial fit for up and down
 backgrounds = data.map(tdo.poly_background_fit(low_bound, high_bound, degree_fit))
@@ -27,11 +27,13 @@ tdop.setup_matplotlib()
 
 plotter = tdop.Plotter().add_many_plots(
     [
-        tdop.PlotFitBounds(low_bound, high_bound) + tdop.standard_background_vs_field_curves(fitted_background) +  tdop.standard_signal_vs_field_plot(data) ,
+        tdop.PlotFitBounds(low_bound, high_bound)
+        + tdop.standard_background_vs_field_curves(fitted_background)
+        + tdop.standard_signal_vs_field_plot(data),
         tdop.standard_signal_without_background_vs_field_plot(data_without_background),
     ]
 )
 
-plotter.with_fig_size(12,6).plot(1, 2)
+plotter.with_fig_size(12, 6).plot(1, 2)
 
 plt.show()

@@ -99,7 +99,7 @@ class UpDownData:
         """Apply the up function to the up value and the down function to the down value"""
         up = functions.up(self.up)
         down = functions.down(self.down)
-        return UpDownData(up, down)    
+        return UpDownData(up, down)
 
 
 # Filters
@@ -109,9 +109,10 @@ def background_filter(background):
     filt = lambda data: SweepData(data.field, data.signal - background(data.field))
     return filt
 
+
 def background_fit(field):
     return lambda background: SweepData(field, background(field))
-    
+
 
 def poly_background_fit(low_bound, high_bound, degree):
     def fit(data):
@@ -119,6 +120,7 @@ def poly_background_fit(low_bound, high_bound, degree):
         coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
         background = pol.Polynomial(coefficients)
         return background
+
     return fit
 
 
@@ -128,21 +130,5 @@ def smooth_background_fit(low_bound, high_bound, degree):
         coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
         background = pol.Polynomial(coefficients)
         return background
+
     return fit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

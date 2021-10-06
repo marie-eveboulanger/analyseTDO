@@ -32,8 +32,7 @@ class Plotter:
 
     def __init__(self):
         self.plots = list()
-        self.fig_size = (8.5,6)
-        
+        self.fig_size = (8.5, 6)
 
     def add_plot(self, plot):
         self.plots.append(plot)
@@ -86,14 +85,15 @@ class PlotSignalVsField(AbstractPlot):
             axe.plot(data.field, data.signal, label=label, **kwargs)
         return axe
 
+
 @dataclass(frozen=True)
 class PlotFitBounds(AbstractPlot):
-	low: float
-	high: float
+    low: float
+    high: float
 
-	def draw_into(self, axe):
-		axe.axvline(self.high, color = "gray")
-		axe.axvline(self.low, color = "gray")
+    def draw_into(self, axe):
+        axe.axvline(self.high, color="gray")
+        axe.axvline(self.low, color="gray")
 
 
 @dataclass(frozen=True)
@@ -135,8 +135,8 @@ def standard_signal_vs_field_plot(data):
             PlotSignalVsField().add_data(data.up, "UP").add_data(data.down, "DOWN"),
             PlotInfo(
                 title="Signal vs Field",
-                xlabel="Field ( T )", 
-                ylabel="Signal", 
+                xlabel="Field ( T )",
+                ylabel="Signal",
                 legend=True,
             ),
         ]
@@ -156,36 +156,10 @@ def standard_signal_without_background_vs_field_plot(data):
         ]
     )
 
+
 def standard_background_vs_field_curves(data):
-    return PlotSignalVsField().add_data(data.up, "UP_fit", color = "k").add_data(data.down, "DOWN_fit", color = "gray")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return (
+        PlotSignalVsField()
+        .add_data(data.up, "UP_fit", color="k")
+        .add_data(data.down, "DOWN_fit", color="gray")
+    )
