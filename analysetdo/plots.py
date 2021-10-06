@@ -28,7 +28,7 @@ def setup_matplotlib():
 
 
 class Plotter:
-    """lalal"""
+    """---"""
 
     def __init__(self):
         self.plots = list()

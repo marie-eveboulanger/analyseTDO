@@ -11,6 +11,12 @@ def read_from_file(file_name: str):
     where the first one is the field and the
     second one the TDO signal.
 
+    Args:
+        file_name: path to where the file is.
+
+    Returns:
+        Raw Sweep Data
+
     """
     data = np.loadtxt(file_name)
     field = data[:, 0]
@@ -22,12 +28,9 @@ def read_from_file(file_name: str):
 class SweepData:
     """Data from TDO experiment.
 
-    Arguments
-    ---------
-    field:
-        magnetic field in Tesla, both up and down sweeps
-    signal:
-        TDO signal corresponding to the field
+    Args:
+        field: magnetic field in Tesla
+        signal: TDO signal corresponding to the field
     """
 
     field: np.ndarray
@@ -62,11 +65,18 @@ class SweepData:
         )
 
     def trim_before_field(self, target):
-        index = self.nearest_field_index(target) + 1
+        """Cut the data before a targeted value
+        
+        Args:
+            target: all field above will be kept
+
+        """
+        index = self.floor_field_index(target)
         return SweepData(self.field[index:], self.signal[index:])
 
     def trim_after_field(self, target):
-        index = self.nearest_field_index(target) + 1
+        """ Cut the data after a targeted value """
+        index = self.ceil_field_index(target)
         return SweepData(self.field[:index], self.signal[:index])
 
     def nearest_field_index(self, target):
@@ -78,6 +88,16 @@ class SweepData:
         else:
             return below
 
+    def floor_field_index(self, target):
+        """Find the index where the field is the closest to target. Rounding below."""
+        above = np.nonzero(self.field > target)[0][0]
+        below = above - 1
+        return below
+
+    def ceil_field_index(self, target):
+        """Find the index where the field is the closest to target. Rounding above."""
+        above = np.nonzero(self.field >= target)[0][0]
+        return above
 
 @dataclass(frozen=True)
 class UpDownData:
@@ -106,15 +126,19 @@ class UpDownData:
 
 
 def background_filter(background):
+    """ Creates the filtered data"""
     filt = lambda data: SweepData(data.field, data.signal - background(data.field))
     return filt
 
 
 def background_fit(field):
+    """Creates a fit function"""
     return lambda background: SweepData(field, background(field))
 
 
 def poly_background_fit(low_bound, high_bound, degree):
+    """Creates a background function from a polynomial fit"""
+
     def fit(data):
         trimmed = data.trim_before_field(low_bound).trim_after_field(high_bound)
         coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
@@ -125,10 +149,24 @@ def poly_background_fit(low_bound, high_bound, degree):
 
 
 def smooth_background_fit(low_bound, high_bound, degree):
-    def fit(data):
-        trimmed = data.trim_before_field(low_bound).trim_after_field(high_bound)
-        coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
-        background = pol.Polynomial(coefficients)
-        return background
+     """----"""
+    pass
 
-    return fit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
