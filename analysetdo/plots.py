@@ -4,6 +4,7 @@ import itertools as it
 import numpy as np
 from dataclasses import dataclass
 from typing import Optional
+from abc import ABC
 
 
 def setup_matplotlib():
@@ -31,6 +32,8 @@ class Plotter:
 
     def __init__(self):
         self.plots = list()
+        self.fig_size = (8.5,6)
+        
 
     def add_plot(self, plot):
         self.plots.append(plot)
@@ -41,8 +44,12 @@ class Plotter:
             self.plots.append(plot)
         return self
 
+    def with_fig_size(self, height, width):
+        self.fig_size = (height, width)
+        return self
+
     def init_plot(self, num_rows, num_cols):
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=(8.5, 6))
+        fig, axes = plt.subplots(num_rows, num_cols, figsize=self.fig_size)
         if num_rows == 1 and num_cols == 1:
             axes = np.array([[axes]])
         elif num_rows == 1 or num_cols == 1:
@@ -59,7 +66,12 @@ class Plotter:
         return fig, axes
 
 
-class PlotSignalVsField:
+class AbstractPlot(ABC):
+    def __add__(self, other):
+        return combine_plots([self, other])
+
+
+class PlotSignalVsField(AbstractPlot):
     def __init__(self):
         self.data = dict()
 
@@ -75,7 +87,7 @@ class PlotSignalVsField:
         return axe
 
 @dataclass(frozen=True)
-class PlotFitBounds:
+class PlotFitBounds(AbstractPlot):
 	low: float
 	high: float
 
@@ -85,7 +97,7 @@ class PlotFitBounds:
 
 
 @dataclass(frozen=True)
-class PlotInfo:
+class PlotInfo(AbstractPlot):
     title: Optional[str] = None
     xlabel: Optional[str] = None
     ylabel: Optional[str] = None
@@ -107,7 +119,7 @@ def combine_plots(plots):
     return PlotCombination(plots)
 
 
-class PlotCombination:
+class PlotCombination(AbstractPlot):
     def __init__(self, plots):
         self.plots = plots
 
@@ -122,7 +134,10 @@ def standard_signal_vs_field_plot(data):
         [
             PlotSignalVsField().add_data(data.up, "UP").add_data(data.down, "DOWN"),
             PlotInfo(
-                title="Signal vs Field", xlabel="Field", ylabel="Signal", legend=True
+                title="Signal vs Field",
+                xlabel="Field ( T )", 
+                ylabel="Signal", 
+                legend=True,
             ),
         ]
     )
@@ -134,9 +149,43 @@ def standard_signal_without_background_vs_field_plot(data):
             PlotSignalVsField().add_data(data.up, "UP").add_data(data.down, "DOWN"),
             PlotInfo(
                 title="Signal without background vs Field",
-                xlabel="Field",
+                xlabel="Field ( T )",
                 ylabel="Signal without background",
                 legend=True,
             ),
         ]
     )
+
+def standard_background_vs_field_curves(data):
+    return PlotSignalVsField().add_data(data.up, "UP_fit", color = "k").add_data(data.down, "DOWN_fit", color = "gray")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -90,17 +90,59 @@ class UpDownData:
     down: SweepData
 
     def map(self, function):
-        """Apply the function to both up and down data"""
+        """Apply the function to both up and down values"""
         up = function(self.up)
         down = function(self.down)
         return UpDownData(up, down)
 
+    def map_each(self, functions):
+        """Apply the up function to the up value and the down function to the down value"""
+        up = functions.up(self.up)
+        down = functions.down(self.down)
+        return UpDownData(up, down)    
 
-def poly_background_filter(low_bound, high_bound, degree):
-    def filt(data):
+
+# Filters
+
+
+def background_filter(background):
+    filt = lambda data: SweepData(data.field, data.signal - background(data.field))
+    return filt
+
+def background_fit(field):
+    return lambda background: SweepData(field, background(field))
+    
+
+def poly_background_fit(low_bound, high_bound, degree):
+    def fit(data):
         trimmed = data.trim_before_field(low_bound).trim_after_field(high_bound)
         coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
-        poly = pol.Polynomial(coefficients)
-        return SweepData(data.field, data.signal - poly(data.field))
+        background = pol.Polynomial(coefficients)
+        return background
+    return fit
 
-    return filt
+
+def smooth_background_fit(low_bound, high_bound, degree):
+    def fit(data):
+        trimmed = data.trim_before_field(low_bound).trim_after_field(high_bound)
+        coefficients = pol.polyfit(trimmed.field, trimmed.signal, degree)
+        background = pol.Polynomial(coefficients)
+        return background
+    return fit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

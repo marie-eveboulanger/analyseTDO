@@ -5,8 +5,7 @@ description = ""
 authors = ["Marie-Eve <marieeve.boulanger.1@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9, <3.11"
-numpy = "^1.21.2"
+python = "^3.9, <3.10"
 matplotlib = "^3.4.3"
 
 [tool.poetry.dev-dependencies]
