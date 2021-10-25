@@ -66,7 +66,7 @@ class SweepData:
 
     def trim_before_field(self, target):
         """Cut the data before a targeted value
-        
+
         Args:
             target: all field above will be kept
 
@@ -75,7 +75,7 @@ class SweepData:
         return SweepData(self.field[index:], self.signal[index:])
 
     def trim_after_field(self, target):
-        """ Cut the data after a targeted value """
+        """Cut the data after a targeted value"""
         index = self.ceil_field_index(target)
         return SweepData(self.field[:index], self.signal[:index])
 
@@ -98,6 +98,27 @@ class SweepData:
         """Find the index where the field is the closest to target. Rounding above."""
         above = np.nonzero(self.field >= target)[0][0]
         return above
+
+    def inverse_field(self):
+        inverse_field = 1/self.field
+        return SweepData(inverse_field[::-1], self.signal[::-1])
+
+    def resample(self, domain):
+        signal = np.interp(domain, self.field, self.signal)
+        return SweepData(domain, signal)
+
+    def fourier_transform(self):
+        """We assume that the field is sampled uniformly"""    
+        delta = np.mean(np.diff(self.field))
+        frequences = np.fft.fftfreq(len(self), d=delta)
+        amplitudes = np.fft.fft(self.signal)
+        cutoff = np.int(np.ceil(len(self) / 2) - 1)
+        pos_indices = frequences >0
+        return SweepData(frequences[pos_indices], np.abs(amplitudes)[pos_indices])
+
+    def __len__(self):
+        return len(self.field)
+
 
 @dataclass(frozen=True)
 class UpDownData:
@@ -122,11 +143,11 @@ class UpDownData:
         return UpDownData(up, down)
 
 
-# Filters
+# Transformations
 
 
 def background_filter(background):
-    """ Creates the filtered data"""
+    """Creates the filtered data"""
     filt = lambda data: SweepData(data.field, data.signal - background(data.field))
     return filt
 
@@ -148,9 +169,22 @@ def poly_background_fit(low_bound, high_bound, degree):
     return fit
 
 
-def smooth_background_fit(low_bound, high_bound, degree):
-     """----"""
-    pass
+def gradient(data):
+    """Give back the derivative of the signal"""
+    signal_derivative = np.gradient(data.signal, data.field)
+    return SweepData(data.field, signal_derivative)
+
+
+def fourier_transform(low_bound, high_bound, delta):
+    def transform(data):
+        domain = np.arange(low_bound, high_bound, delta)
+        resampled = data.resample(domain)
+        frequences = np.fft.fftfreq(len(domain), d=delta)
+        amplitudes = np.fft.fft(resampled.signal)
+        cutoff = np.ceil(len(domain / 2)) - 1
+        return SweepData(frequences[0:cutoff], amplitudes[0:cutoff])
+
+    return transform
 
 
 
@@ -170,3 +204,11 @@ def smooth_background_fit(low_bound, high_bound, degree):
 
 
 
+
+
+
+
+
+
+
+    

@@ -27,7 +27,7 @@ def setup_matplotlib():
     # editing the text in illustrator
 
 
-class Plotter:
+class PlotManager:
     """---"""
 
     def __init__(self):
@@ -53,15 +53,15 @@ class Plotter:
             axes = np.array([[axes]])
         elif num_rows == 1 or num_cols == 1:
             axes = np.array([axes])
-        fig.subplots_adjust(left=0.15, right=0.9, bottom=0.15, top=0.9)
+        fig.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9)
         return fig, axes
 
     def plot(self, num_rows, num_cols):
         fig, axes = self.init_plot(num_rows, num_cols)
-        for ((row, col), plot) in zip(
-            it.product(range(num_rows), range(num_cols)), self.plots
-        ):
+        iterator = zip(it.product(range(num_rows), range(num_cols)), self.plots)
+        for ((row, col), plot) in iterator:
             plot.draw_into(axes[row, col])
+        fig.tight_layout()
         return fig, axes
 
 
@@ -77,6 +77,12 @@ class PlotSignalVsField(AbstractPlot):
     def add_data(self, data, label, **kwargs):
         self.data[label] = (data, kwargs)
         return self
+
+    def add_up_down(self, data, label_pattern, **kwa):
+        return (
+            self.add_data(data.up, label_pattern.format("UP"), **kwargs)
+                .add_data(data.down, label_pattern.format("DOWN"), **kwargs)
+        )
 
     def draw_into(self, axe):
         for label, data_and_kwargs in self.data.items():
@@ -129,6 +135,14 @@ class PlotCombination(AbstractPlot):
         return axe
 
 
+def plot_up_down(data, label_pattern, **kwargs):
+    return (
+        PlotSignalVsField()
+            .add_data(data.up, label_pattern.format("UP"), **kwargs)
+            .add_data(data.down, label_pattern.format("DOWN"), **kwargs)
+    )
+
+
 def standard_signal_vs_field_plot(data):
     return combine_plots(
         [
@@ -162,4 +176,32 @@ def standard_background_vs_field_curves(data):
         PlotSignalVsField()
         .add_data(data.up, "UP_fit", color="k")
         .add_data(data.down, "DOWN_fit", color="gray")
+    )
+
+
+def standard_derivative_signal_vs_field_plot(data):
+    return combine_plots(
+        [
+            PlotSignalVsField().add_data(data.up, "UP").add_data(data.down, "DOWN"),
+            PlotInfo(
+                title="Derivative signal vs Field",
+                xlabel="Field ( T )",
+                ylabel="Derivative signal",
+                legend=True,
+            ),
+        ]
+    )
+
+
+def standard_FFT_signal_vs_one_over_field_plot(data):
+    return combine_plots(
+        [
+            PlotSignalVsField().add_data(data.up, "UP").add_data(data.down, "DOWN"),
+            PlotInfo(
+                title="FFT",
+                xlabel="Frequence ( T )",
+                ylabel="Amplitude",
+                legend=True,
+            ),
+        ]
     )
