@@ -27,7 +27,7 @@ def setup_matplotlib():
     # editing the text in illustrator
 
 
-class Plotter:
+class PlotManager:
     """---"""
 
     def __init__(self):
@@ -58,10 +58,10 @@ class Plotter:
 
     def plot(self, num_rows, num_cols):
         fig, axes = self.init_plot(num_rows, num_cols)
-        for ((row, col), plot) in zip(
-            it.product(range(num_rows), range(num_cols)), self.plots
-        ):
+        iterator = zip(it.product(range(num_rows), range(num_cols)), self.plots)
+        for ((row, col), plot) in iterator:
             plot.draw_into(axes[row, col])
+        fig.tight_layout()
         return fig, axes
 
 
@@ -77,6 +77,12 @@ class PlotSignalVsField(AbstractPlot):
     def add_data(self, data, label, **kwargs):
         self.data[label] = (data, kwargs)
         return self
+
+    def add_up_down(self, data, label_pattern, **kwa):
+        return (
+            self.add_data(data.up, label_pattern.format("UP"), **kwargs)
+                .add_data(data.down, label_pattern.format("DOWN"), **kwargs)
+        )
 
     def draw_into(self, axe):
         for label, data_and_kwargs in self.data.items():
@@ -130,8 +136,11 @@ class PlotCombination(AbstractPlot):
 
 
 def plot_up_down(data, label_pattern, **kwargs):
-    return PlotSignalVsField().add_data(data.up, label_pattern.format("UP"), **kwargs).add_data(data.down, label_pattern.format("DOWN"), **kwargs)
-
+    return (
+        PlotSignalVsField()
+            .add_data(data.up, label_pattern.format("UP"), **kwargs)
+            .add_data(data.down, label_pattern.format("DOWN"), **kwargs)
+    )
 
 
 def standard_signal_vs_field_plot(data):
