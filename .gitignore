@@ -142,3 +142,11 @@ html/
 
 # Mac weird stuff
 .DS_Store
+
+# Plots
+*.pdf
+*.jpg
+*.png
+
+# Poetry
+poetry.lock
