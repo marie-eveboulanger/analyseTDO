@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Parameters
-low_bound_fit = 50
+low_bound_fit = 50 
 high_bound_fit = 86
 degree_fit = 3
-num_fit_samples = 1000
+num_fit_samples = 1000 #number of points in the fit
 
 # Load and clean data
 data = tdo.read_from_file("data_test_2.out")  # read the file
