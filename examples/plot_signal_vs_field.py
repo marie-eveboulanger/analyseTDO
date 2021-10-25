@@ -16,7 +16,7 @@ degree_fit = 3
 # Bounds for the FFT
 low_fft_bound = 60
 high_fft_bound = 80
-fft_domain = np.linspace(1/low_fft_bound, 1/high_fft_bound, 10000)
+fft_domain = np.linspace(1/low_fft_bound, 1/high_fft_bound, 1000)
 
 x = np.linspace(low_bound, high_bound, 1000)
 

@@ -100,21 +100,21 @@ class SweepData:
         return above
 
     def inverse_field(self):
-        return SweepData(1 / self.field, self.signal)
+        inverse_field = 1/self.field
+        return SweepData(inverse_field[::-1], self.signal[::-1])
 
     def resample(self, domain):
         signal = np.interp(domain, self.field, self.signal)
         return SweepData(domain, signal)
 
     def fourier_transform(self):
-        """We assume that the field is sampled uniformly"""
-     
+        """We assume that the field is sampled uniformly"""    
         delta = np.mean(np.diff(self.field))
         frequences = np.fft.fftfreq(len(self), d=delta)
         amplitudes = np.fft.fft(self.signal)
         cutoff = np.int(np.ceil(len(self) / 2) - 1)
-        # return SweepData(frequences[:cutoff], np.abs(amplitudes[:cutoff]))
-        return SweepData(frequences, np.abs(amplitudes))
+        pos_indices = frequences >0
+        return SweepData(frequences[pos_indices], np.abs(amplitudes)[pos_indices])
 
     def __len__(self):
         return len(self.field)
